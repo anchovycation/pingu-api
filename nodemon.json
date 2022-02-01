@@ -1,4 +1,5 @@
 {
+    "exec": "babel-node src/server.js",
     "verbose": true,
     "watch": [
         "src",
