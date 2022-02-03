@@ -11,6 +11,7 @@ The best way to watch YouTube by video chatting with friends.
 ## Introduce
 + [Roadmap](#roadmap)
   +  [Technologies planned to be used](#technologies-planned-to-be-used)
++ [Folder structure](#folder-structure)
 + [Usage](#usage)
 + [Contributing](#contributing)
 + [Contributors](#contributors)
@@ -32,6 +33,29 @@ You can see what we've done before and what we will work on in the future.
 ### Technologies planned to be used
 Node.js, TypeScript(optional), Nest.js, Socket.io, Redis, MongoDB, Peer.js
 
+## Folder structure
+```bash
+.
+├── CONTRIBUTING.md # Contributing document
+├── dist # Build folder
+├── LICENSE
+├── nodemon.json
+├── package.json
+├── package-lock.json
+├── README.md
+├── sample.env 
+└── src
+    ├── Constants
+    │   ├── index.js
+    │   └── SocketEvents.js
+    ├── Events # socket events handlers, <job-category>/index.js
+    │   ├── index.js 
+    │   └── System
+    │       └── index.js
+    ├── server.js 
+    └── Socket.js 
+
+```
 ## Usage
 ## Install
 ```bash
