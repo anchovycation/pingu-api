@@ -11,12 +11,14 @@ import { bindSocket } from './Socket';
 
 import 'dotenv/config';
 import 'colors';
+import router from './Router';
 
 const port = process.env.PORT || 3000;
 
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
+app.use(router);
 const server = http.createServer(app);
 bindSocket(server);
 
