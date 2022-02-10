@@ -1,5 +1,5 @@
-import express from "express";
-import routes from "./Routes";
+import express from 'express';
+import routes from './Routes';
 
 const router = express.Router();
 
@@ -10,4 +10,4 @@ routes.forEach((route) => {
   router.use(prefix, subRouter);
 });
 
-export default router
+export default router;
