@@ -23,7 +23,7 @@ const createRoom = async (req, res) => {
     });
   }
   const room = await RoomService.createRoom({ username, roomName, videoUrl });
-  return res.send({ room: toJSON(room), user: room.users[0] });
+  return res.status(201).send({ room: toJSON(room), user: room.users[0] });
 };
 
 export default [{
