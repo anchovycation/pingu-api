@@ -1,5 +1,5 @@
 import Model from 'metronom';
-import MessageService from './Message';
+import MessageService from '../Message';
 import generateId from '../../Utilities/GenerateId';
 import { USER_TYPES } from '../../Constants';
 

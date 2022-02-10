@@ -1,4 +1,4 @@
-import generateId from '../../../Utilities/GenerateId';
+import generateId from '../../Utilities/GenerateId';
 
 const createMessage = (text, user) => ({
   id: `m${generateId()}`,
