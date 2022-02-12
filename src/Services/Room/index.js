@@ -39,8 +39,26 @@ const createRoom = async ({
   return room;
 };
 
+const joinRoom = async ({
+  id, username,
+}) => {
+  const room = await roomModel.findById(id);
+
+  room.users.push({
+    id: generateId(),
+    username,
+    role: USER_TYPES.GUEST,
+  });
+
+  room.messages.push(MessageService.createSystemMessage(`${username} joined to room`));
+  await room.save();
+
+  return room;
+};
+
 const RoomService = {
   createRoom,
+  joinRoom,
 };
 
 export default RoomService;
