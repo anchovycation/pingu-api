@@ -26,9 +26,31 @@ const createRoom = async (req, res) => {
   return res.status(201).send({ room: toJSON(room), user: room.users[0] });
 };
 
+const joinRoom = async (req, res, next) => {
+  try {
+    const { username } = req.body;
+    const { id } = req.params;
+
+    if (!username) {
+      return res.status(400).send({
+        message: 'Username must be in to the body and dont be empty!',
+      });
+    }
+    const room = await RoomService.joinRoom({ id, username });
+    return res.status(200).send({ room: toJSON(room) });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default [{
   prefix: '/create-room',
   inject: (router) => {
     router.post('', createRoom);
+  },
+}, {
+  prefix: '/join-room',
+  inject: (router) => {
+    router.post('/:id', joinRoom);
   },
 }];
