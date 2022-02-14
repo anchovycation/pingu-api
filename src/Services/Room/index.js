@@ -44,6 +44,10 @@ const joinRoom = async ({
 }) => {
   const room = await roomModel.findById(id);
 
+  if (!room) {
+    throw new Error('Room not find or you dont have a permission!');
+  }
+
   room.users.push({
     id: generateId(),
     username,

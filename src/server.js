@@ -19,6 +19,8 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 app.use(router);
+app.use((err, req, res, next) => res.status(400).send({ message: err.message }));
+
 const server = http.createServer(app);
 bindSocket(server);
 
