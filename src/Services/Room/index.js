@@ -24,16 +24,23 @@ const createRoom = async ({
     id = generateId();
   }
 
-  const data = roomModel.schema;
-  data.id = id;
-  data.name = roomName;
-  data.video.link = videoUrl;
-  data.users[0] = {
-    id: generateId(),
-    name: username,
-    role: USER_TYPES.OWNER,
-  };
-  data.messages[0] = MessageService.createSystemMessage(`Room created by ${username}`);
+  const data = {
+    id,
+    name: roomName,
+    video: {
+      link: videoUrl,
+      duration: 0
+    },
+    playlist: [],
+    users: [{
+      id: generateId(),
+      name: username,
+      role: USER_TYPES.OWNER,
+    }],
+    messages: [
+      MessageService.createSystemMessage(`Room created by ${username}`)
+    ]
+  }
 
   const room = await roomModel.create(data);
   return room;
