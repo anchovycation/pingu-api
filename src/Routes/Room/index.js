@@ -1,10 +1,5 @@
 import RoomService from '../../Services/Room';
 
-const toJSON = (record) => {
-  delete record._Model; // remove circular structure and system info
-  return record;
-};
-
 const createRoom = async (req, res) => {
   const { username, roomName, videoUrl } = req.body;
   if (!username || !roomName || !videoUrl) {
@@ -23,7 +18,7 @@ const createRoom = async (req, res) => {
     });
   }
   const room = await RoomService.createRoom({ username, roomName, videoUrl });
-  return res.status(201).send({ room: toJSON(room), user: room.users[0] });
+  return res.status(201).send({ room: room.getPureData(), user: room.users[0] });
 };
 
 const joinRoom = async (req, res, next) => {
@@ -37,7 +32,7 @@ const joinRoom = async (req, res, next) => {
       });
     }
     const room = await RoomService.joinRoom({ id, username });
-    return res.status(200).send({ room: toJSON(room) });
+    return res.status(200).send({ room: room.getPureData() });
   } catch (error) {
     next(error);
   }
