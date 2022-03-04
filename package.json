@@ -5,7 +5,7 @@
   "main": "src/server.js",
   "scripts": {
     "start": "npm run build && node dist/server.js",
-    "start:dev": "babel-node src/server.js",
+    "start:dev": "nodemon start",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "build": "babel src -d dist",
@@ -36,6 +36,7 @@
     "cors": "^2.8.5",
     "dotenv": "^14.3.2",
     "express": "^4.17.2",
+    "metronom": "^0.1.1",
     "node": "^17.4.0",
     "socket.io": "^4.4.1"
   },
