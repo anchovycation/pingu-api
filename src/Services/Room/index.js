@@ -67,9 +67,35 @@ const joinRoom = async ({
   return room;
 };
 
+const findRoom = async (id) => {
+  const room = await roomModel.findById(id);
+
+
+  if (!room) {
+    throw new Error('Room not find or you dont have a permission!');
+  }
+
+  return room;
+};
+
+const updateUserId = async ({
+  id, userId, socketId,
+}) => {
+  const room = await findRoom(id);
+  room.users.forEach(user => {
+    if(user.id == userId){
+      user.id = socketId;
+    }
+  });
+  await room.save();
+  return room;
+};
+
 const RoomService = {
   createRoom,
   joinRoom,
+  findRoom,
+  updateUserId,
 };
 
 export default RoomService;
