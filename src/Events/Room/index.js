@@ -5,7 +5,7 @@ export const joinRoom = async ({ id, userId }, { socket, io }) => {
   let room = await RoomService.findRoom(id);
   socket.join(room.id);
   let socketId = socket.id;
-  console.log(`USER: ${socketId} connected with: ${room.id}`);
+  console.log(`User with ID: ${socketId} joined to room: ${room.id}`);
   room = await RoomService.updateUserId({ id, userId, socketId });
 
   socket.emit('joined', { room });
