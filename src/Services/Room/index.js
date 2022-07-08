@@ -57,7 +57,7 @@ const joinRoom = async ({
 
   room.users.push({
     id: generateId(),
-    username,
+    name: username,
     role: USER_TYPES.GUEST,
   });
 
