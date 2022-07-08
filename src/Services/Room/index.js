@@ -34,7 +34,7 @@ const createRoom = async ({
     playlist: [],
     users: [{
       id: generateId(),
-      name: username,
+      username,
       role: USER_TYPES.OWNER,
     }],
     messages: [
@@ -57,7 +57,7 @@ const joinRoom = async ({
 
   room.users.push({
     id: generateId(),
-    name: username,
+    username,
     role: USER_TYPES.GUEST,
   });
 
