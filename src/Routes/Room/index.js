@@ -56,6 +56,19 @@ const findRoom = async (req, res, next) => {
   }
 };
 
+const roomIsExist = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const isExist = await RoomService.isExist(id);
+    if(!isExist){
+      return res.status(200).send({message: false});
+    };
+    return res.status(200).send({message: true});
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default [
   {
     prefix: '/create-room',
@@ -73,6 +86,7 @@ export default [
     prefix: '/rooms',
     inject: (router) => {
       router.get('/:id', findRoom);
+      router.get('/:id/is-exist', roomIsExist);
     },
   },
 ];

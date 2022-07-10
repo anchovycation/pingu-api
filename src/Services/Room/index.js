@@ -91,11 +91,21 @@ const updateUserId = async ({
   return room;
 };
 
+const isExist = async (id) => {
+  if(!id){
+    throw new Error('id is required!');
+  }
+  const redisKey = `${roomModel.keyPrefix}:${id}`;
+  let isExist = await (await roomModel.redisClient.keys(redisKey)).length;
+  return isExist > 0;
+};
+
 const RoomService = {
   createRoom,
   joinRoom,
   findRoom,
   updateUserId,
+  isExist,
 };
 
 export default RoomService;
