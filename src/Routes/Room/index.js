@@ -60,10 +60,7 @@ const roomIsExist = async (req, res, next) => {
   try {
     const { id } = req.params;
     const isExist = await RoomService.isExist(id);
-    if(!isExist){
-      return res.status(200).send({message: false});
-    };
-    return res.status(200).send({message: true});
+    return res.status(200).send({ isExist });
   } catch (error) {
     next(error);
   }
