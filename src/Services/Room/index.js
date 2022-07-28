@@ -100,12 +100,26 @@ const isExist = async (id) => {
   return isExist > 0;
 };
 
+const addVideoToPLaylist = async ({ id, username, link }) => {
+  let room = await findRoom(id);
+
+  room.playlist.push({
+    id: room.playlist.length + 1,
+    username,
+    link,
+  });
+
+  await room.save();
+  return true;
+}
+
 const RoomService = {
   createRoom,
   joinRoom,
   findRoom,
   updateUserId,
   isExist,
+  addVideoToPLaylist,
 };
 
 export default RoomService;
