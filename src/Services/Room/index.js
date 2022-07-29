@@ -2,20 +2,9 @@ import Model from 'metronom';
 import MessageService from '../Message';
 import generateId from '../../Utilities/GenerateId';
 import { USER_TYPES } from '../../Constants';
+import room from '../../Model/room'
 
-const schema = {
-  id: '',
-  name: '',
-  video: {
-    link: '',
-    duration: 0,
-  },
-  playlist: [],
-  users: [],
-  messages: [],
-};
-
-const roomModel = new Model(schema, 'rooms', { keyUnique: 'id' });
+const roomModel = new Model(room, 'rooms', { keyUnique: 'id' });
 
 const createRoom = async ({
   id, username, roomName, videoUrl,
