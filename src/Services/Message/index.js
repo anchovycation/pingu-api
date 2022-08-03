@@ -16,7 +16,7 @@ const createSystemMessage = (text) => {
   return message;
 };
 
-const addMessageToMessages = async (id, text, user) => {
+const saveMessage = async (id, text, user) => {
   let room = await RoomService.findRoom(id);
 
   if(room.messages.length > 100 ){
@@ -29,13 +29,13 @@ const addMessageToMessages = async (id, text, user) => {
   room.messages.push(message);
 
   await room.save();
-  return true;
+  return message;
 };
 
 const MessageService = {
   createMessage,
   createSystemMessage,
-  addMessageToMessages,
+  saveMessage,
 };
 
 export default MessageService;
