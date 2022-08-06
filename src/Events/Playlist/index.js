@@ -9,13 +9,13 @@ export const updatePlaylist = async (
       await RoomService.addVideoToPLaylist({ id, username, link });
       break;
     case PLAYLIST_STATUS.MOVE_DOWN:
-      await RoomService.moveDown(id, videoId);
+      await RoomService.moveDownVideo(id, videoId);
       break;
     case PLAYLIST_STATUS.MOVE_UP:
-      await RoomService.moveUp(id, videoId);
+      await RoomService.moveUpVideo(id, videoId);
       break;
     default:
-      break;
+      return;
   }
   
   io.to(id).emit(SOCKET_EVENTS.PLAYLIST_UPDATED, { id, username, link, status });
