@@ -113,6 +113,45 @@ const addVideoToPLaylist = async ({ id, username, link }) => {
   return true;
 }
 
+
+const moveDown = async (roomId, videoId) => {
+  let room = await findRoom(roomId);
+
+  const index = room.playlist.findIndex(video => {
+    return video.id === videoId;
+  }); 
+
+  if (room.playlist.length === index) {
+    return;
+  }
+
+  const element = room.playlist.splice(index, 1)[0];
+  room.playlist.splice(index + 1, 0, element);
+
+  await room.save();
+
+  return room.playlist;
+};
+
+const moveUp = async (roomId, videoId) => {
+  let room = await findRoom(roomId);
+
+  const index = room.playlist.findIndex(video => {
+    return video.id === videoId;
+  }); 
+
+  if (index === 0) {
+    return;
+  }
+
+  const element = room.playlist.splice(index, 1)[0];
+
+  room.playlist.splice(index - 1, 0, element);
+  await room.save();
+  
+  return room.playlist;
+};
+
 const RoomService = {
   createRoom,
   joinRoom,
@@ -120,6 +159,8 @@ const RoomService = {
   updateUserId,
   isExist,
   addVideoToPLaylist,
+  moveDown,
+  moveUp,
 };
 
 export default RoomService;
