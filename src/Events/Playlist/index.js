@@ -14,6 +14,9 @@ export const updatePlaylist = async (
     case PLAYLIST_STATUS.MOVE_UP:
       await RoomService.moveUpVideo(id, videoId);
       break;
+    case PLAYLIST_STATUS.REMOVE:
+      await RoomService.removeVideoFromPlaylist(id, videoId);
+      break;
     default:
       return;
   }
@@ -27,3 +30,4 @@ export default [
     handler: updatePlaylist,
   },
 ];
+
