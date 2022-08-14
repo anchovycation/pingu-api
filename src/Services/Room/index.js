@@ -158,6 +158,17 @@ const removeVideoFromPlaylist = async (roomId, videoId) => {
   return room.playlist;
 }
 
+const kickUserFromRoom = async (roomId, userId) => {
+  let room = await findRoom(roomId);
+
+  const index = room.users.findIndex(user => {
+    return user.id === userId;
+  });
+
+  room.users.splice(index, 1);
+  await room.save();
+};
+
 const RoomService = {
   createRoom,
   joinRoom,
@@ -167,7 +178,8 @@ const RoomService = {
   addVideoToPLaylist,
   moveDownVideo,
   moveUpVideo,
-  removeVideoFromPlaylist
+  removeVideoFromPlaylist,
+  kickUserFromRoom,
 };
 
 export default RoomService;

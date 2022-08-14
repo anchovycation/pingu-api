@@ -9,6 +9,8 @@ const SOCKET_EVENTS = {
   DISPLAY: 'display',
   UPDATE_PLAYLIST: 'update-playlist',
   PLAYLIST_UPDATED: 'playlist-updated',
+  KICK_USER: 'kick-user',
+  USER_KICKED: 'user-kicked',
 };
 
 export default SOCKET_EVENTS;
