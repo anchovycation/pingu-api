@@ -8,9 +8,9 @@ export const joinRoom = async ({ id, userId, username }, { socket, io }) => {
   let socketId = socket.id;
   room = await RoomService.updateUserId({ id, userId, socketId });
 
-  let message = `${username} joined to room`;
-  await MessageService.saveSystemMessage(id, message);
-  socket.emit(SOCKET_EVENTS.JOINED, { room, message });
+  const message = await MessageService.saveSystemMessage({ id, status: SOCKET_EVENTS.JOIN_ROOM, username });
+  socket.emit(SOCKET_EVENTS.JOINED, { room });
+  io.to(id).emit(SOCKET_EVENTS.RECEIVE_MESSAGE, { message });
 };
 
 export default [
