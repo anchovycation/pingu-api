@@ -33,13 +33,13 @@ const saveMessage = async (id, text, user) => {
   return message;
 };
 
-const saveJoinMessage = (username) => {
+const createJoinMessage = (username) => {
   const text = `${username} joined to room`;
   const message = createSystemMessage(text);
   return message;
 };
 
-const saveLeaveMessage = (username) => {
+const createLeaveMessage = (username) => {
   const text = `${username} left the room`;
   const message = createSystemMessage(text);
   return message;
@@ -50,10 +50,10 @@ const saveSystemMessage = async ({id, status, username}) => {
   let message;
   switch(status) {
     case SOCKET_EVENTS.JOIN_ROOM:
-      message = saveJoinMessage(username);
+      message = createJoinMessage(username);
       break;
     case SOCKET_EVENTS.DISCONNECT: 
-      message = saveLeaveMessage(username);
+      message = createLeaveMessage(username);
       break;
     default:
       return;
@@ -69,8 +69,8 @@ const MessageService = {
   createMessage,
   createSystemMessage,
   saveMessage,
-  saveJoinMessage,
-  saveLeaveMessage,
+  createJoinMessage,
+  createLeaveMessage,
   saveSystemMessage,
 };
 
