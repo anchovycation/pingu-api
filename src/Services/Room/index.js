@@ -61,7 +61,6 @@ const joinRoom = async ({
     role: USER_TYPES.GUEST,
   });
 
-  room.messages.push(MessageService.createSystemMessage(`${username} joined to room`));
   await room.save();
 
   return room;

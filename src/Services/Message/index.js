@@ -32,10 +32,22 @@ const saveMessage = async (id, text, user) => {
   return message;
 };
 
+const saveSystemMessage = async (id, text) => {
+  let room = await RoomService.findRoom(id);
+
+  const message = createSystemMessage(text);
+
+  room.messages.push(message);
+
+  await room.save();
+  return message;
+};
+
 const MessageService = {
   createMessage,
   createSystemMessage,
   saveMessage,
+  saveSystemMessage,
 };
 
 export default MessageService;

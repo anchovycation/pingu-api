@@ -1,14 +1,16 @@
 import { SOCKET_EVENTS } from '../../Constants';
 import RoomService from '../../Services/Room';
+import MessageService from '../../Services/Message';
 
-export const joinRoom = async ({ id, userId }, { socket, io }) => {
+export const joinRoom = async ({ id, userId, username }, { socket, io }) => {
   let room = await RoomService.findRoom(id);
   socket.join(room.id);
   let socketId = socket.id;
-  console.log(`User with ID: ${socketId} joined to room: ${room.id}`);
   room = await RoomService.updateUserId({ id, userId, socketId });
 
-  socket.emit('joined', { room });
+  let message = `${username} joined to room`;
+  await MessageService.saveSystemMessage(id, message);
+  socket.emit(SOCKET_EVENTS.JOINED, { room, message });
 };
 
 export default [
