@@ -1,5 +1,6 @@
 import generateId from '../../Utilities/GenerateId';
 import RoomService from '../Room';
+import { SOCKET_EVENTS } from '../../Constants';
 
 const createMessage = (text, user) => ({
   id: `m${generateId()}`,
@@ -32,10 +33,45 @@ const saveMessage = async (id, text, user) => {
   return message;
 };
 
+const createJoinMessage = (username) => {
+  const text = `${username} joined to room`;
+  const message = createSystemMessage(text);
+  return message;
+};
+
+const createLeaveMessage = (username) => {
+  const text = `${username} left the room`;
+  const message = createSystemMessage(text);
+  return message;
+};
+
+const saveSystemMessage = async ({id, status, username}) => {
+  let room = await RoomService.findRoom(id);
+  let message;
+  switch(status) {
+    case SOCKET_EVENTS.JOIN_ROOM:
+      message = createJoinMessage(username);
+      break;
+    case SOCKET_EVENTS.DISCONNECT: 
+      message = createLeaveMessage(username);
+      break;
+    default:
+      return;
+  }
+
+  room.messages.push(message);
+
+  await room.save();
+  return message;
+};
+
 const MessageService = {
   createMessage,
   createSystemMessage,
   saveMessage,
+  createJoinMessage,
+  createLeaveMessage,
+  saveSystemMessage,
 };
 
 export default MessageService;
