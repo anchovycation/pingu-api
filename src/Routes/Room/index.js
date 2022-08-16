@@ -2,12 +2,7 @@ import RoomService from '../../Services/Room';
 
 const createRoom = async (req, res) => {
   const { username, roomName, videoUrl } = req.body;
-  if (!username || !roomName || !videoUrl) {
-    return res.status(400).send({
-      message:
-        '"username", "roomName" and "videoUrl" must be in to the body and dont be empty!',
-    });
-  }
+
   if (!username || !roomName || !videoUrl) {
     return res.status(400).send({
       message:
