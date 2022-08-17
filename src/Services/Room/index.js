@@ -1,7 +1,7 @@
 import Model from 'metronom';
 import MessageService from '../Message';
 import generateId from '../../Utilities/GenerateId';
-import { USER_TYPES } from '../../Constants';
+import { USER_TYPES, VIDEO_STATUS } from '../../Constants';
 
 const schema = {
   id: '',
@@ -29,7 +29,8 @@ const createRoom = async ({
     name: roomName,
     video: {
       link: videoUrl,
-      duration: 0
+      duration: 0,
+      status: VIDEO_STATUS.STOPPED,
     },
     playlist: [],
     users: [{
@@ -168,6 +169,22 @@ const kickUserFromRoom = async (roomId, userId) => {
   await room.save();
 };
 
+const playVideo = async (roomId) => {
+  let room = await findRoom(roomId);
+
+  room.video.status = VIDEO_STATUS.PLAYED;
+  await room.save();
+  return room.video;
+};
+
+const stopVideo = async (roomId) => {
+  let room = await findRoom(roomId);
+
+  room.video.status = VIDEO_STATUS.STOPPED;
+  await room.save();
+  return room.video;
+};
+
 const RoomService = {
   createRoom,
   joinRoom,
@@ -179,6 +196,8 @@ const RoomService = {
   moveUpVideo,
   removeVideoFromPlaylist,
   kickUserFromRoom,
+  playVideo,
+  stopVideo,
 };
 
 export default RoomService;
