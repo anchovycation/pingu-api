@@ -2,26 +2,27 @@ import { SOCKET_EVENTS, PLAYLIST_STATUS } from '../../Constants';
 import RoomService from '../../Services/Room';
 
 export const updatePlaylist = async (
-  { id, videoId, username, link, status }, { socket, io }
+  { id, videoId, username, link, playlistStatus }, { socket, io }
 ) => {
-  switch (status) {
+  let playlist;
+  switch (playlistStatus) {
     case PLAYLIST_STATUS.ADD:
-      await RoomService.addVideoToPLaylist({ id, username, link });
+      playlist = await RoomService.addVideoToPLaylist({ id, username, link });
       break;
     case PLAYLIST_STATUS.MOVE_DOWN:
-      await RoomService.moveDownVideo(id, videoId);
+      playlist = await RoomService.moveDownVideo(id, videoId);
       break;
     case PLAYLIST_STATUS.MOVE_UP:
-      await RoomService.moveUpVideo(id, videoId);
+      playlist = await RoomService.moveUpVideo(id, videoId);
       break;
     case PLAYLIST_STATUS.REMOVE:
-      await RoomService.removeVideoFromPlaylist(id, videoId);
+      playlist = await RoomService.removeVideoFromPlaylist(id, videoId);
       break;
     default:
       return;
   }
   
-  io.to(id).emit(SOCKET_EVENTS.PLAYLIST_UPDATED, { id, username, link, status });
+  io.to(id).emit(SOCKET_EVENTS.PLAYLIST_UPDATED, { playlist, playlistStatus });
 };
 
 export default [

@@ -110,7 +110,7 @@ const addVideoToPLaylist = async ({ id, username, link }) => {
   });
 
   await room.save();
-  return true;
+  return room.playlist;
 }
 
 const moveDownVideo  = async (roomId, videoId) => {
