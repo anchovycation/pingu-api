@@ -13,6 +13,8 @@ const SOCKET_EVENTS = {
   USER_KICKED: 'user-kicked',
   UPDATE_VIDEO_STATUS: 'update-video-status',
   VIDEO_STATUS_UPDATED: 'video-status-updated',
+  CHANGE_VIDEO_DURATION: 'change-video-duration',
+  VIDEO_DURATION_CHANGED: 'video-duration-changed',
 };
 
 export default SOCKET_EVENTS;
