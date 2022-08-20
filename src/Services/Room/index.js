@@ -193,6 +193,27 @@ const jumpInVideo = async (roomId, duration) => {
   return room.video;
 };
 
+const skipVideo = async (roomId) => {
+  let room = await findRoom(roomId);
+
+  if(room.playlist.length == 0 )
+    return;
+  
+  let newVideo = room.playlist[0];
+  
+  room.playlist.shift();
+  
+  delete newVideo.id;
+  delete newVideo.username;
+  newVideo.duration = 0;
+  newVideo.status = 'stopped';
+
+  room.video = newVideo;
+
+  room.save();
+  return room;
+};
+
 const RoomService = {
   createRoom,
   joinRoom,
@@ -207,6 +228,7 @@ const RoomService = {
   playVideo,
   stopVideo,
   jumpInVideo,
+  skipVideo,
 };
 
 export default RoomService;
