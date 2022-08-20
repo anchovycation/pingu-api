@@ -198,17 +198,10 @@ const skipVideo = async (roomId) => {
 
   if(room.playlist.length == 0 )
     return;
-  
-  let newVideo = room.playlist[0];
-  
-  room.playlist.shift();
-  
-  delete newVideo.id;
-  delete newVideo.username;
-  newVideo.duration = 0;
-  newVideo.status = 'stopped';
 
-  room.video = newVideo;
+  room.video.duration = 0;
+  room.video.status = VIDEO_STATUS.STOPPED;
+  room.video.link = room.playlist.shift().link;
 
   room.save();
   return room;
