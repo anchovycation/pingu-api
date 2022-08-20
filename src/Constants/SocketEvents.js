@@ -15,6 +15,8 @@ const SOCKET_EVENTS = {
   VIDEO_STATUS_UPDATED: 'video-status-updated',
   CHANGE_VIDEO_DURATION: 'change-video-duration',
   VIDEO_DURATION_CHANGED: 'video-duration-changed',
+  SKIP_VIDEO: 'skip-video',
+  VIDEO_SKIPPED: 'video-skipped',
 };
 
 export default SOCKET_EVENTS;
