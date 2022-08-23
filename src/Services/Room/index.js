@@ -110,7 +110,7 @@ const addVideoToPLaylist = async ({ id, username, link }) => {
 
   if(isPlaylist) {
     let playlistId = link.split('list=')[1];
-    let response = await axios.get(`${YOUTUBE_PLAYLIST_ITEMS_API}playlistId=${playlistId}&maxResults=500&key=${process.env.API_KEY}`);
+    let response = await axios.get(`${YOUTUBE_PLAYLIST_ITEMS_API}playlistId=${playlistId}&maxResults=500&key=${process.env.YOUTUBE_API_KEY}`);
 
     let playlist = response.data.items;
     room.playlist = room.playlist.concat( 
