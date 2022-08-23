@@ -2,6 +2,7 @@ import Model from 'metronom';
 import MessageService from '../Message';
 import generateId from '../../Utilities/GenerateId';
 import { USER_TYPES, VIDEO_STATUS } from '../../Constants';
+import axios from 'axios';
 
 const schema = {
   id: '',
@@ -100,18 +101,39 @@ const isExist = async (id) => {
   return isExist > 0;
 };
 
+const YOUTUBE_PLAYLIST_ITEMS_API = "https://youtube.googleapis.com/youtube/v3/playlistItems?part=contentDetails&";
+
 const addVideoToPLaylist = async ({ id, username, link }) => {
   let room = await findRoom(id);
+  const word = 'playlist';
+  let isPlaylist = link.includes(word);
 
-  room.playlist.push({
-    id: generateId(),
-    username,
-    link,
-  });
+  if(isPlaylist) {
+    let playlistId = link.split('list=')[1];
+    let response = await axios.get(`${YOUTUBE_PLAYLIST_ITEMS_API}playlistId=${playlistId}&maxResults=500&key=${process.env.YOUTUBE_API_KEY}`);
+
+    let playlist = response.data.items;
+    room.playlist = room.playlist.concat( 
+      playlist.map( video => {
+        return {
+          id: generateId(),
+          username,
+          link: `https://www.youtube.com/watch?v=${video.contentDetails.videoId}`,
+        }
+      })
+    );
+  }
+  else{
+    room.playlist.push({
+      id: generateId(),
+      username,
+      link,
+    });
+  }
 
   await room.save();
   return room.playlist;
-}
+};
 
 const moveDownVideo  = async (roomId, videoId) => {
   let room = await findRoom(roomId);
