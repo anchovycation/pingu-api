@@ -1,5 +1,6 @@
 import { SOCKET_EVENTS, VIDEO_STATUS } from '../../Constants';
 import RoomService from '../../Services/Room';
+import Timer from '../../Utilities/Timer';
 
 export const updateVideoStatus = async (
   { id, video, videoStatus }, { socket, io }
@@ -7,9 +8,11 @@ export const updateVideoStatus = async (
   switch (videoStatus) {
     case VIDEO_STATUS.PLAYED:
       video = await RoomService.playVideo(id);
+      Timer.startTimer(id);
       break;
     case VIDEO_STATUS.STOPPED:
       video = await RoomService.stopVideo(id);
+      Timer.stopTimer(id);
       break;
     default:
       return;
