@@ -12,6 +12,7 @@ import { bindSocket } from './Socket';
 import 'dotenv/config';
 import 'colors';
 import router from './Router';
+import mongoConnect from './Database'
 
 const port = process.env.PORT || 3000;
 
@@ -23,6 +24,7 @@ app.use((err, req, res, next) => res.status(400).send({ message: err.message }))
 
 const server = http.createServer(app);
 bindSocket(server);
+mongoConnect();
 
 app.get('/', (req, res) => res.send('Welcome to the Pingu'));
 
