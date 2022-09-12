@@ -1,7 +1,7 @@
 import Mongoose from "mongoose";
 
 const connect = async (err) => {
-  await Mongoose.connect(process.env.MONGO_HOST,
+  await Mongoose.connect(process.env.MONGO_CONNECTION_STRING,
   {
     useNewUrlParser: true,
   });
