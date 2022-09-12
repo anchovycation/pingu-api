@@ -1,7 +1,7 @@
 import Mongoose from "mongoose";
 
 const connect = async (err) => {
-  await Mongoose.connect(process.env.MONGO_HOST + "/pingu",
+  await Mongoose.connect(process.env.MONGO_HOST,
   {
     useNewUrlParser: true,
   });

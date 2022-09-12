@@ -84,14 +84,40 @@ const joinRoom = async ({
   return room;
 };
 
-const findRoom = async (id) => {
-  const room = await redisRoomModel.findById(id);
+const findRooms = async (id) => {
+  const redisRoom = await redisRoomModel.findById(id);
+  const mongoRoom = await MongoRoomModel.findOne({id});
 
-  if (!room) {
+  if (!redisRoom || !mongoRoom) {
     throw new Error('Room not find or you dont have a permission!');
   }
 
+  const room = {
+    ...redisRoom,
+    ...mongoRoom._doc,
+  }
+
   return room;
+};
+
+const findMongoRoom = async (id) => {
+  const mongoRoom = await MongoRoomModel.findOne({id});
+
+  if (!mongoRoom) {
+    throw new Error('Room not find or you dont have a permission!');
+  }
+
+  return mongoRoom;
+};
+
+const findRedisRoom = async (id) => {
+  const redisRoom = await redisRoomModel.findById(id);
+
+  if (!redisRoom) {
+    throw new Error('Room not find or you dont have a permission!');
+  }
+  
+  return redisRoom;
 };
 
 const isExist = async (id) => {
@@ -106,7 +132,7 @@ const isExist = async (id) => {
 const YOUTUBE_PLAYLIST_ITEMS_API = "https://youtube.googleapis.com/youtube/v3/playlistItems?part=contentDetails&";
 
 const addVideoToPLaylist = async ({ id, username, link }) => {
-  const mongoRoom = await MongoRoomModel.findOne({id});
+  const mongoRoom = await findMongoRoom(id);
 
   const word = 'playlist';
   let isPlaylist = link.includes(word);
@@ -140,7 +166,7 @@ const addVideoToPLaylist = async ({ id, username, link }) => {
 };
 
 const moveDownVideo  = async (roomId, videoId) => {
-  const mongoRoom = await MongoRoomModel.findOne({roomId});
+  const mongoRoom = await findMongoRoom(roomId);
 
   const index = mongoRoom.playlist.findIndex(video => video.id === videoId); 
 
@@ -157,7 +183,7 @@ const moveDownVideo  = async (roomId, videoId) => {
 };
 
 const moveUpVideo = async (roomId, videoId) => {
-  const mongoRoom = await MongoRoomModel.findOne({roomId});
+  const mongoRoom = await findMongoRoom(roomId);
 
   const index = mongoRoom.playlist.findIndex(video => video.id === videoId); 
 
@@ -174,7 +200,7 @@ const moveUpVideo = async (roomId, videoId) => {
 };
 
 const removeVideoFromPlaylist = async (roomId, videoId) => {
-  const mongoRoom = await MongoRoomModel.findOne({roomId});
+  const mongoRoom = await findMongoRoom(roomId);
 
   const index = mongoRoom.playlist.findIndex(video => video.id === videoId);
 
@@ -198,7 +224,7 @@ const kickUserFromRoom = async (roomId, userId) => {
 };
 
 const playVideo = async (roomId) => {
-  let redisRoom = await findRoom(roomId);
+  let redisRoom = await findRedisRoom(roomId);
 
   redisRoom.video.status = VIDEO_STATUS.PLAYED;
   await redisRoom.save();
@@ -206,7 +232,7 @@ const playVideo = async (roomId) => {
 };
 
 const stopVideo = async (roomId) => {
-  let redisRoom = await findRoom(roomId);
+  let redisRoom = await findRedisRoom(roomId);
 
   redisRoom.video.status = VIDEO_STATUS.STOPPED;
   await redisRoom.save();
@@ -214,7 +240,7 @@ const stopVideo = async (roomId) => {
 };
 
 const jumpInVideo = async (roomId, duration) => {
-  let redisRoom = await findRoom(roomId);
+  let redisRoom = await findRedisRoom(roomId);
 
   redisRoom.video.duration = duration;
   await redisRoom.save();
@@ -222,8 +248,8 @@ const jumpInVideo = async (roomId, duration) => {
 };
 
 const skipVideo = async (roomId) => {
-  const redisRoom = await findRoom(roomId);
-  const mongoRoom = await MongoRoomModel.findOne({roomId});
+  const redisRoom = await findRedisRoom(roomId);
+  const mongoRoom = await findMongoRoom(roomId);
 
   if(mongoRoom.playlist.length == 0 ){
     return;
@@ -247,7 +273,9 @@ const skipVideo = async (roomId) => {
 const RoomService = {
   createRoom,
   joinRoom,
-  findRoom,
+  findRooms,
+  findMongoRoom,
+  findRedisRoom,
   isExist,
   addVideoToPLaylist,
   moveDownVideo,
