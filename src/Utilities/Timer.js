@@ -5,7 +5,7 @@ import RoomService from "../Services/Room";
   static timers = {};
 
   static startTimer = async (id) =>  {
-    let room = await RoomService.findRoom(id);
+    let room = await RoomService.findRedisRoom(id);
     this.timers[room.id] = setInterval ( () => {
       room.video.duration +=  1;
       room.save();

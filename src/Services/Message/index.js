@@ -18,7 +18,7 @@ const createSystemMessage = (text) => {
 };
 
 const saveMessage = async (id, text, user) => {
-  let room = await RoomService.findRoom(id);
+  let room = await RoomService.findRedisRoom(id);
 
   if(room.messages.length > 100 ){
     room.messages.shift();
@@ -46,7 +46,7 @@ const createLeaveMessage = (username) => {
 };
 
 const saveSystemMessage = async ({id, status, username}) => {
-  let room = await RoomService.findRoom(id);
+  let room = await RoomService.findRedisRoom(id);
   let message;
   switch(status) {
     case SOCKET_EVENTS.JOIN_ROOM:
