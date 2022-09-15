@@ -270,6 +270,12 @@ const skipVideo = async (roomId) => {
   return room;
 };
 
+const getVideoDuration = async (roomId) => {
+  const redisRoom = await findRedisRoom(roomId);
+
+  return redisRoom.video.duration;
+}
+
 const RoomService = {
   createRoom,
   joinRoom,
@@ -286,6 +292,7 @@ const RoomService = {
   stopVideo,
   jumpInVideo,
   skipVideo,
+  getVideoDuration,
 };
 
 export default RoomService;
