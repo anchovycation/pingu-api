@@ -1,7 +1,7 @@
 import Model from 'metronom';
 import MessageService from '../Message';
 import generateId from '../../Utilities/GenerateId';
-import { USER_TYPES, VIDEO_STATUS } from '../../Constants';
+import { USER_TYPES, VIDEO_STATUS, ACTIONS } from '../../Constants';
 import axios from 'axios';
 import { MongoRoomModel, UserModel } from '../../Models';
 
@@ -276,6 +276,27 @@ const getVideoDuration = async (roomId) => {
   return redisRoom.video.duration;
 }
 
+const findUser = async (userId) => {
+  const user = await UserModel.findOne({userId});
+
+  if(!user){
+    throw new Error('User not find or you dont have a permission!');
+  }
+
+  return user;
+}
+
+const authorization = async ({userId, event}) => {
+  const user = await findUser(userId);
+
+  console.log(user);
+
+  if(!event.includes(user.role)){
+    throw new Error('You must have permission to do this!');
+  }
+  return user;
+}
+
 const RoomService = {
   createRoom,
   joinRoom,
@@ -293,6 +314,8 @@ const RoomService = {
   jumpInVideo,
   skipVideo,
   getVideoDuration,
+  findUser,
+  authorization,
 };
 
 export default RoomService;
