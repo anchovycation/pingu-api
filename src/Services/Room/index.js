@@ -4,6 +4,7 @@ import generateId from '../../Utilities/GenerateId';
 import { USER_TYPES, VIDEO_STATUS } from '../../Constants';
 import axios from 'axios';
 import { MongoRoomModel, UserModel } from '../../Models';
+import CustomError from '../../Exceptions/CustomError';
 
 const schema = {
   id: '',
@@ -63,7 +64,7 @@ const joinRoom = async ({
   const redisRoom = await redisRoomModel.findById(id);
   
   if (!redisRoom) {
-    throw new Error('Room not find or you dont have a permission!');
+    throw new CustomError('Room not find or you dont have a permission!', 403);
   }
   
   const mongoRoom = await MongoRoomModel.findOne({id});
@@ -89,7 +90,7 @@ const findRooms = async (id) => {
   const mongoRoom = await MongoRoomModel.findOne({id});
 
   if (!redisRoom || !mongoRoom) {
-    throw new Error('Room not find or you dont have a permission!');
+    throw new CustomError('Room not find or you dont have a permission!', 403);
   }
 
   const room = {
@@ -104,7 +105,7 @@ const findMongoRoom = async (id) => {
   const mongoRoom = await MongoRoomModel.findOne({id});
 
   if (!mongoRoom) {
-    throw new Error('Room not find or you dont have a permission!');
+    throw new CustomError('Room not find or you dont have a permission!', 403);
   }
 
   return mongoRoom;
@@ -114,7 +115,7 @@ const findRedisRoom = async (id) => {
   const redisRoom = await redisRoomModel.findById(id);
 
   if (!redisRoom) {
-    throw new Error('Room not find or you dont have a permission!');
+    throw new CustomError('Room not find or you dont have a permission!', 403);
   }
   
   return redisRoom;
@@ -122,7 +123,7 @@ const findRedisRoom = async (id) => {
 
 const isExist = async (id) => {
   if(!id){
-    throw new Error('id is required!');
+    throw new CustomError('id is required!', 400);
   }
   const redisKey = `${redisRoomModel.keyPrefix}:${id}`;
   let isExist = (await redisRoomModel.redisClient.keys(redisKey)).length;
