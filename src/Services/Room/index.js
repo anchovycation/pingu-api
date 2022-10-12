@@ -4,7 +4,7 @@ import generateId from '../../Utilities/GenerateId';
 import { USER_TYPES, VIDEO_STATUS } from '../../Constants';
 import axios from 'axios';
 import { MongoRoomModel, UserModel } from '../../Models';
-import CustomError from '../../Middlewares/CustomError';
+import CustomError from '../../Exceptions/CustomError';
 
 const schema = {
   id: '',
@@ -133,9 +133,6 @@ const isExist = async (id) => {
 const YOUTUBE_PLAYLIST_ITEMS_API = "https://youtube.googleapis.com/youtube/v3/playlistItems?part=contentDetails&";
 
 const addVideoToPLaylist = async ({ id, username, link }) => {
-  if(username == undefined){
-    new CustomError("heyt", 400);
-  }
   const mongoRoom = await findMongoRoom(id);
 
   const word = 'playlist';

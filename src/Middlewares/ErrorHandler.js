@@ -1,5 +1,5 @@
-const ErrorHandler = (Error, req, res, next) => {
-  res.status(Error.status || 500).send(Error.message);
+const ErrorHandler = (error, req, res, next) => {
+  res.status(error.status || 500).send(error.message);
 }
 
 export default ErrorHandler;
