@@ -8,6 +8,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import http from 'http';
 import { bindSocket } from './Socket';
+import ErrorHandler from './Middlewares/ErrorHandler'; 
 
 import 'dotenv/config';
 import 'colors';
@@ -20,10 +21,10 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 app.use(router);
-app.use((err, req, res, next) => res.status(400).send({ message: err.message }));
 
 const server = http.createServer(app);
 bindSocket(server);
+app.use(ErrorHandler);
 mongoConnect();
 
 app.get('/', (req, res) => res.send('Welcome to the Pingu'));

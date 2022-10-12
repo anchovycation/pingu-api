@@ -44,8 +44,8 @@ const joinRoom = async (req, res, next) => {
 const findRoom = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const room = await RoomService.findRoom(id);
-    return res.status(200).send({ room: room.getPureData() });
+    const room = await RoomService.findRooms(id);
+    return res.status(200).send({ room });
   } catch (error) {
     next(error);
   }
