@@ -1,10 +1,11 @@
-import { SOCKET_EVENTS, VIDEO_STATUS } from '../../Constants';
+import { SOCKET_EVENTS, VIDEO_STATUS, ACTIONS} from '../../Constants';
 import RoomService from '../../Services/Room';
 import Timer from '../../Utilities/Timer';
 
 export const updateVideoStatus = async (
-  { id, video, videoStatus }, { socket, io }
+  { id, userId, video, videoStatus }, { socket, io }
 ) => {
+  await RoomService.authorization({userId, event: ACTIONS.UPDATE_VIDEO_STATUS});
   switch (videoStatus) {
     case VIDEO_STATUS.PLAYED:
       video = await RoomService.playVideo(id);
@@ -22,15 +23,17 @@ export const updateVideoStatus = async (
 };
 
 export const jumpInVideo = async (
-  { id, duration }, { socket, io }
+  { id, userId, duration }, { socket, io }
 ) => {
+  await RoomService.authorization({userId, event: ACTIONS.CHANGE_VIDEO_DURATION});
   let video = await RoomService.jumpInVideo(id, duration);
   io.to(id).emit(SOCKET_EVENTS.VIDEO_DURATION_CHANGED, { video });
 };
 
 export const skipVideo = async (
-  { id }, { socket, io }
+  { id, userId }, { socket, io }
 ) => {
+  await RoomService.authorization({userId, event: ACTIONS.SKIP_VIDEO});
   let room = await RoomService.skipVideo(id);
   io.to(id).emit(SOCKET_EVENTS.VIDEO_SKIPPED, { video: room.video, playlist: room.playlist });
 };

@@ -1,4 +1,4 @@
-import { SOCKET_EVENTS, PLAYLIST_STATUS } from '../../Constants';
+import { SOCKET_EVENTS, PLAYLIST_STATUS, ACTIONS } from '../../Constants';
 import RoomService from '../../Services/Room';
 
 export const updatePlaylist = async (

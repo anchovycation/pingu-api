@@ -37,6 +37,7 @@ const createRoom = async ({
   }
 
   const user = await UserModel.create({
+    socketId: "",
     username,
     role: USER_TYPES.OWNER,
   })
@@ -277,6 +278,34 @@ const getVideoDuration = async (roomId) => {
   return redisRoom.video.duration;
 }
 
+const findUserWithId = async (userId) => {
+  const user = await UserModel.findOne({userId});
+
+  if(!user){
+    throw new CustomError('User not find or you dont have a permission!', 403);
+  }
+
+  return user;
+}
+
+const findUserWithSocketId = async (socketId) => {
+  const user = await UserModel.findOne({socketId});
+
+  if(!user){
+    throw new CustomError('User not find or you dont have a permission!', 403);
+  }
+
+  return user;
+}
+
+const addSocketId = async (userId, socketId) => {
+  const user = await findUserWithId(userId);
+  user.socketId = socketId;
+
+  user.save();
+  return user;
+}
+
 const RoomService = {
   createRoom,
   joinRoom,
@@ -294,6 +323,9 @@ const RoomService = {
   jumpInVideo,
   skipVideo,
   getVideoDuration,
+  findUserWithId,
+  findUserWithSocketId,
+  addSocketId,
 };
 
 export default RoomService;
