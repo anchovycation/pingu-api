@@ -4,6 +4,7 @@ import MessageService from '../../Services/Message';
 
 export const joinRoom = async ({ id, userId, username }, { socket, io }) => {
   let room = await RoomService.findRooms(id);
+  await RoomService.addSocketId(userId, socket.id);
   socket.join(room.id);
 
   const message = await MessageService.saveSystemMessage({ id, status: SOCKET_EVENTS.JOIN_ROOM, username });

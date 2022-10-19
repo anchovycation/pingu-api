@@ -2,13 +2,12 @@ import { SOCKET_EVENTS, PLAYLIST_STATUS, ACTIONS } from '../../Constants';
 import RoomService from '../../Services/Room';
 
 export const updatePlaylist = async (
-  { id, videoId, userId, link, playlistStatus }, { socket, io }
+  { id, videoId, username, link, playlistStatus }, { socket, io }
 ) => {
-  const user = await RoomService.authorization({userId, event: ACTIONS.UPDATE_PLAYLIST});
   let playlist;
   switch (playlistStatus) {
     case PLAYLIST_STATUS.ADD:
-      playlist = await RoomService.addVideoToPLaylist({ id, username: user.name, link });
+      playlist = await RoomService.addVideoToPLaylist({ id, username, link });
       break;
     case PLAYLIST_STATUS.MOVE_DOWN:
       playlist = await RoomService.moveDownVideo(id, videoId);

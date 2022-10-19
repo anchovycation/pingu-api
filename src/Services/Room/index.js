@@ -1,7 +1,7 @@
 import Model from 'metronom';
 import MessageService from '../Message';
 import generateId from '../../Utilities/GenerateId';
-import { USER_TYPES, VIDEO_STATUS, ACTIONS } from '../../Constants';
+import { USER_TYPES, VIDEO_STATUS } from '../../Constants';
 import axios from 'axios';
 import { MongoRoomModel, UserModel } from '../../Models';
 import CustomError from '../../Exceptions/CustomError';
@@ -37,6 +37,7 @@ const createRoom = async ({
   }
 
   const user = await UserModel.create({
+    socketId: "",
     username,
     role: USER_TYPES.OWNER,
   })
@@ -277,24 +278,31 @@ const getVideoDuration = async (roomId) => {
   return redisRoom.video.duration;
 }
 
-const findUser = async (userId) => {
+const findUserWithId = async (userId) => {
   const user = await UserModel.findOne({userId});
 
   if(!user){
-    throw new Error('User not find or you dont have a permission!');
+    throw new CustomError('User not find or you dont have a permission!', 403);
   }
 
   return user;
 }
 
-const authorization = async ({userId, event}) => {
-  const user = await findUser(userId);
+const findUserWithSocketId = async (socketId) => {
+  const user = await UserModel.findOne({socketId});
 
-  console.log(user);
-
-  if(!event.includes(user.role)){
-    throw new Error('You must have permission to do this!');
+  if(!user){
+    throw new CustomError('User not find or you dont have a permission!', 403);
   }
+
+  return user;
+}
+
+const addSocketId = async (userId, socketId) => {
+  const user = await findUserWithId(userId);
+  user.socketId = socketId;
+
+  user.save();
   return user;
 }
 
@@ -315,8 +323,9 @@ const RoomService = {
   jumpInVideo,
   skipVideo,
   getVideoDuration,
-  findUser,
-  authorization,
+  findUserWithId,
+  findUserWithSocketId,
+  addSocketId,
 };
 
 export default RoomService;
