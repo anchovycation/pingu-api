@@ -6,6 +6,10 @@ import RoomService from "../Services/Room";
 
   static startTimer = async (id) =>  {
     let room = await RoomService.findRedisRoom(id);
+    if(this.timers[room.id]){
+      return;
+    }
+    
     this.timers[room.id] = setInterval ( async () => {
       let duration = await RoomService.getVideoDuration(id);
       room.video.duration = duration + 1;
@@ -14,6 +18,10 @@ import RoomService from "../Services/Room";
   }
 
   static stopTimer(id) {
+    if(!this.timers[id]){
+      return;
+    }
+
     clearInterval(this.timers[id]);
     delete this.timers[id];
   }
