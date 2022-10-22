@@ -9,7 +9,7 @@ const authorization = async ({socketId, event}) => {
   const user = await RoomService.findUserWithSocketId(socketId);
 
   if(!ACTIONS[event].includes(user.role)){
-    throw new CustomError('You must have permission to do this!', 403);
+    throw new CustomError(`You do not have permission to ${event}!`, 403);
   }
   return user;
 }
