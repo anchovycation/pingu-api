@@ -42,9 +42,9 @@ const createRoom = async ({
     role: USER_TYPES.OWNER,
   })
 
-  const redisRoom = (await redisRoomModel.create(data)).getPureData(); 
+  const redisRoom = (await redisRoomModel.create(data)).getPureData();
 
-  const mongoRoom = await MongoRoomModel.create({ 
+  const mongoRoom = await MongoRoomModel.create({
     id,
     name: roomName,
     users: [user.id]
@@ -63,12 +63,12 @@ const joinRoom = async ({
   id, username,
 }) => {
   const redisRoom = await redisRoomModel.findById(id);
-  
+
   if (!redisRoom) {
     throw new CustomError('Room not find or you dont have a permission!', 403);
   }
-  
-  const mongoRoom = await MongoRoomModel.findOne({id});
+
+  let mongoRoom = await MongoRoomModel.findOne({ id });
 
   const user = await UserModel.create({
     username,
@@ -77,18 +77,31 @@ const joinRoom = async ({
   mongoRoom.users.push(user.id);
 
   await mongoRoom.save();
+  mongoRoom = await MongoRoomModel.aggregate([{
+    $match: { 
+      "id": id
+    }
+  },{
+    $lookup: {
+      from: "users",
+      localField: "users",
+      foreignField: "id",
+      as: "users",
+    },
+  }]);
+  mongoRoom = mongoRoom[0];
 
   const room = {
     ...redisRoom,
-    ...mongoRoom._doc,
+    ...mongoRoom,
   }
-
+  
   return room;
 };
 
 const findRooms = async (id) => {
   const redisRoom = await redisRoomModel.findById(id);
-  const mongoRoom = await MongoRoomModel.findOne({id});
+  const mongoRoom = await MongoRoomModel.findOne({ id });
 
   if (!redisRoom || !mongoRoom) {
     throw new CustomError('Room not find or you dont have a permission!', 403);
@@ -103,7 +116,7 @@ const findRooms = async (id) => {
 };
 
 const findMongoRoom = async (id) => {
-  const mongoRoom = await MongoRoomModel.findOne({id});
+  const mongoRoom = await MongoRoomModel.findOne({ id });
 
   if (!mongoRoom) {
     throw new CustomError('Room not find or you dont have a permission!', 403);
@@ -118,12 +131,12 @@ const findRedisRoom = async (id) => {
   if (!redisRoom) {
     throw new CustomError('Room not find or you dont have a permission!', 403);
   }
-  
+
   return redisRoom;
 };
 
 const isExist = async (id) => {
-  if(!id){
+  if (!id) {
     throw new CustomError('id is required!', 400);
   }
   const redisKey = `${redisRoomModel.keyPrefix}:${id}`;
@@ -139,13 +152,13 @@ const addVideoToPLaylist = async ({ id, username, link }) => {
   const word = 'playlist';
   let isPlaylist = link.includes(word);
 
-  if(isPlaylist) {
+  if (isPlaylist) {
     let playlistId = link.split('list=')[1];
     let response = await axios.get(`${YOUTUBE_PLAYLIST_ITEMS_API}playlistId=${playlistId}&maxResults=500&key=${process.env.YOUTUBE_API_KEY}`);
 
     let playlist = response.data.items;
-    mongoRoom.playlist = mongoRoom.playlist.concat( 
-      playlist.map( video => {
+    mongoRoom.playlist = mongoRoom.playlist.concat(
+      playlist.map(video => {
         return {
           id: generateId(),
           username,
@@ -154,7 +167,7 @@ const addVideoToPLaylist = async ({ id, username, link }) => {
       })
     );
   }
-  else{
+  else {
     mongoRoom.playlist.push({
       id: generateId(),
       username,
@@ -167,10 +180,10 @@ const addVideoToPLaylist = async ({ id, username, link }) => {
   return mongoRoom.playlist;
 };
 
-const moveDownVideo  = async (roomId, videoId) => {
+const moveDownVideo = async (roomId, videoId) => {
   const mongoRoom = await findMongoRoom(roomId);
 
-  const index = mongoRoom.playlist.findIndex(video => video.id === videoId); 
+  const index = mongoRoom.playlist.findIndex(video => video.id === videoId);
 
   if (mongoRoom.playlist.length === index) {
     return;
@@ -187,7 +200,7 @@ const moveDownVideo  = async (roomId, videoId) => {
 const moveUpVideo = async (roomId, videoId) => {
   const mongoRoom = await findMongoRoom(roomId);
 
-  const index = mongoRoom.playlist.findIndex(video => video.id === videoId); 
+  const index = mongoRoom.playlist.findIndex(video => video.id === videoId);
 
   if (index === 0) {
     return;
@@ -197,7 +210,7 @@ const moveUpVideo = async (roomId, videoId) => {
 
   mongoRoom.playlist.splice(index - 1, 0, element);
   await mongoRoom.save();
-  
+
   return mongoRoom.playlist;
 };
 
@@ -213,15 +226,15 @@ const removeVideoFromPlaylist = async (roomId, videoId) => {
 }
 
 const kickUserFromRoom = async (roomId, userId) => {
-  let mongoRoom = await MongoRoomModel.findOne({roomId});
-  
+  let mongoRoom = await MongoRoomModel.findOne({ roomId });
+
   const index = mongoRoom.users.findIndex(id => {
     return id === userId;
   });
-  
+
   mongoRoom.users.splice(index, 1);
 
-  await UserModel.findOneAndDelete({userId});
+  await UserModel.findOneAndDelete({ userId });
   await mongoRoom.save();
 };
 
@@ -253,7 +266,7 @@ const skipVideo = async (roomId) => {
   const redisRoom = await findRedisRoom(roomId);
   const mongoRoom = await findMongoRoom(roomId);
 
-  if(mongoRoom.playlist.length == 0 ){
+  if (mongoRoom.playlist.length == 0) {
     return;
   }
 
@@ -279,9 +292,9 @@ const getVideoDuration = async (roomId) => {
 }
 
 const findUserWithId = async (userId) => {
-  const user = await UserModel.findOne({userId});
+  const user = await UserModel.findOne({ userId });
 
-  if(!user){
+  if (!user) {
     throw new CustomError('User not find or you dont have a permission!', 403);
   }
 
@@ -289,9 +302,9 @@ const findUserWithId = async (userId) => {
 }
 
 const findUserWithSocketId = async (socketId) => {
-  const user = await UserModel.findOne({socketId});
+  const user = await UserModel.findOne({ socketId });
 
-  if(!user){
+  if (!user) {
     throw new CustomError('User not find or you dont have a permission!', 403);
   }
 
