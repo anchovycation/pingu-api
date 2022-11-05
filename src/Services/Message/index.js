@@ -1,7 +1,6 @@
 import generateId from '../../Utilities/GenerateId';
 import RoomService from '../Room';
 import { SOCKET_EVENTS } from '../../Constants';
-import { UserModel } from '../../Models';
 
 const createMessage = (text, user) => ({
   id: `m${generateId()}`,
