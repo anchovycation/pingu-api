@@ -26,7 +26,7 @@ const saveMessage = async (id, text, user) => {
 
   const message = createMessage(text, user);
   message.isSystemMessage = false;
-
+  message.username = (await RoomService.findUserWithId(message.userId)).username;
   room.messages.push(message);
 
   await room.save();
