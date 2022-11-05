@@ -1,6 +1,7 @@
 import generateId from '../../Utilities/GenerateId';
 import RoomService from '../Room';
 import { SOCKET_EVENTS } from '../../Constants';
+import { UserModel } from '../../Models';
 
 const createMessage = (text, user) => ({
   id: `m${generateId()}`,
@@ -26,7 +27,7 @@ const saveMessage = async (id, text, user) => {
 
   const message = createMessage(text, user);
   message.isSystemMessage = false;
-
+  message.username = (await RoomService.findUserWithId(message.userId)).username;
   room.messages.push(message);
 
   await room.save();
