@@ -1,0 +1,22 @@
+version: "3.9"
+services:
+  backend:
+    build: .
+    depends_on:
+      - "redis-server"
+      - "mongo-server"
+    ports:
+      - "3001:3000"
+    volumes:
+      - .:/code
+    environment:
+      - MONGO_CONNECTION_STRING=mongodb://root:123456@mongo-server:27017
+      - REDIS_CONNECTION_STRING=redis://redis-server:6379
+      - APP_PORT=3000
+  redis-server:
+    image: "redis:alpine"
+  mongo-server:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 123456
