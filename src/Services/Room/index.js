@@ -15,7 +15,12 @@ const schema = {
   messages: [],
 };
 
-const redisRoomModel = new Model(schema, 'rooms', { keyUnique: 'id' });
+const redisRoomModel = new Model(schema, 'rooms', {
+  keyUnique: 'id',
+  redisClientOptions: {
+    url: process.env.REDIS_CONNECTION_STRING,
+  },
+});
 
 const createRoom = async ({
   id, username, roomName, videoUrl,
