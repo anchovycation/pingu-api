@@ -1,4 +1,4 @@
-import { metronom, Types, LogLevels } from "../Cache";
+import { metronom, Types } from "../Cache";
 import { VIDEO_STATUS } from '../Constants';
 
 const redisRoomModel = metronom.define(
@@ -32,7 +32,6 @@ const redisRoomModel = metronom.define(
     'rooms',
     {
         keyUnique: 'id',
-        log: LogLevels.All,
     }
 );
 
