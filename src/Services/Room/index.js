@@ -3,24 +3,8 @@ import MessageService from '../Message';
 import generateId from '../../Utilities/GenerateId';
 import { USER_TYPES, VIDEO_STATUS } from '../../Constants';
 import axios from 'axios';
-import { MongoRoomModel, UserModel } from '../../Models';
+import { MongoRoomModel, RedisRoomModel, UserModel } from '../../Models';
 import CustomError from '../../Exceptions/CustomError';
-
-const schema = {
-  id: '',
-  video: {
-    link: '',
-    duration: 0,
-  },
-  messages: [],
-};
-
-const redisRoomModel = new Model(schema, 'rooms', {
-  keyUnique: 'id',
-  redisClientOptions: {
-    url: process.env.REDIS_CONNECTION_STRING,
-  },
-});
 
 const createRoom = async ({
   id, username, roomName, videoUrl,
@@ -47,7 +31,7 @@ const createRoom = async ({
     role: USER_TYPES.OWNER,
   })
 
-  const redisRoom = (await redisRoomModel.create(data)).getPureData();
+  const redisRoom = (await RedisRoomModel.create(data)).getPureData();
 
   const mongoRoom = await MongoRoomModel.create({
     id,
@@ -67,7 +51,7 @@ const createRoom = async ({
 const joinRoom = async ({
   id, username,
 }) => {
-  const redisRoom = await redisRoomModel.findById(id);
+  const redisRoom = await RedisRoomModel.findById(id);
 
   if (!redisRoom) {
     throw new CustomError('Room not find or you dont have a permission!', 403);
@@ -83,10 +67,10 @@ const joinRoom = async ({
 
   await mongoRoom.save();
   mongoRoom = await MongoRoomModel.aggregate([{
-    $match: { 
+    $match: {
       "id": id
     }
-  },{
+  }, {
     $lookup: {
       from: "users",
       localField: "users",
@@ -100,12 +84,12 @@ const joinRoom = async ({
     ...redisRoom,
     ...mongoRoom,
   }
-  
+
   return room;
 };
 
 const findRooms = async (id) => {
-  const redisRoom = await redisRoomModel.findById(id);
+  const redisRoom = await RedisRoomModel.findById(id);
   const mongoRoom = await MongoRoomModel.findOne({ id });
 
   if (!redisRoom || !mongoRoom) {
@@ -131,7 +115,7 @@ const findMongoRoom = async (id) => {
 };
 
 const findRedisRoom = async (id) => {
-  const redisRoom = await redisRoomModel.findById(id);
+  const redisRoom = await RedisRoomModel.findById(id);
 
   if (!redisRoom) {
     throw new CustomError('Room not find or you dont have a permission!', 403);
@@ -144,8 +128,8 @@ const isExist = async (id) => {
   if (!id) {
     throw new CustomError('id is required!', 400);
   }
-  const redisKey = `${redisRoomModel.keyPrefix}:${id}`;
-  let isExist = (await redisRoomModel.redisClient.keys(redisKey)).length;
+  const redisKey = `${RedisRoomModel.keyPrefix}:${id}`;
+  let isExist = (await RedisRoomModel.redisClient.keys(redisKey)).length;
   return isExist > 0;
 };
 
