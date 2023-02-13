@@ -8,12 +8,12 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import http from 'http';
 import { bindSocket } from './Socket';
-import ErrorHandler from './Middlewares/ErrorHandler'; 
+import ErrorHandler from './Middlewares/ErrorHandler';
 
 import 'dotenv/config';
 import 'colors';
 import router from './Router';
-import mongoConnect from './Database'
+import mongoConnect from './Database';
 
 const port = process.env.PORT || 3000;
 

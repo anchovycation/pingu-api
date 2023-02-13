@@ -1,8 +1,8 @@
 import Model from 'metronom';
+import axios from 'axios';
 import MessageService from '../Message';
 import generateId from '../../Utilities/GenerateId';
 import { USER_TYPES, VIDEO_STATUS } from '../../Constants';
-import axios from 'axios';
 import { MongoRoomModel, RedisRoomModel, UserModel } from '../../Models';
 import CustomError from '../../Exceptions/CustomError';
 
@@ -21,30 +21,30 @@ const createRoom = async ({
       status: VIDEO_STATUS.STOPPED,
     },
     messages: [
-      MessageService.createSystemMessage(`Room created by ${username}`)
-    ]
-  }
+      MessageService.createSystemMessage(`Room created by ${username}`),
+    ],
+  };
 
   const user = await UserModel.create({
     id: generateId(),
-    socketId: "",
+    socketId: '',
     username,
     role: USER_TYPES.OWNER,
-  })
+  });
 
   const redisRoom = (await RedisRoomModel.create(data)).getPureData();
 
   const mongoRoom = await MongoRoomModel.create({
     id,
     name: roomName,
-    users: [user.id]
+    users: [user.id],
   });
 
   const room = {
     ...redisRoom,
     ...mongoRoom._doc,
-    users: [user]
-  }
+    users: [user],
+  };
 
   return room;
 };
@@ -63,21 +63,21 @@ const joinRoom = async ({
   const user = await UserModel.create({
     id: generateId(),
     username,
-    role: USER_TYPES.GUEST
-  })
+    role: USER_TYPES.GUEST,
+  });
   mongoRoom.users.push(user.id);
 
   await mongoRoom.save();
   mongoRoom = await MongoRoomModel.aggregate([{
     $match: {
-      "id": id
-    }
+      id,
+    },
   }, {
     $lookup: {
-      from: "users",
-      localField: "users",
-      foreignField: "id",
-      as: "users",
+      from: 'users',
+      localField: 'users',
+      foreignField: 'id',
+      as: 'users',
     },
   }]);
   mongoRoom = mongoRoom[0];
@@ -85,7 +85,7 @@ const joinRoom = async ({
   const room = {
     ...redisRoom,
     ...mongoRoom,
-  }
+  };
 
   return room;
 };
@@ -101,7 +101,7 @@ const findRooms = async (id) => {
   const room = {
     ...redisRoom,
     ...mongoRoom._doc,
-  }
+  };
 
   return room;
 };
@@ -131,34 +131,31 @@ const isExist = async (id) => {
     throw new CustomError('id is required!', 400);
   }
   const redisKey = `${RedisRoomModel.keyPrefix}:${id}`;
-  let isExist = (await RedisRoomModel.redisClient.keys(redisKey)).length;
-  return isExist > 0;
+  const keyCount = (await RedisRoomModel.redisClient.keys(redisKey)).length;
+  return keyCount > 0;
 };
 
-const YOUTUBE_PLAYLIST_ITEMS_API = "https://youtube.googleapis.com/youtube/v3/playlistItems?part=contentDetails&";
+const YOUTUBE_PLAYLIST_ITEMS_API = 'https://youtube.googleapis.com/youtube/v3/playlistItems?part=contentDetails&';
 
 const addVideoToPLaylist = async ({ id, username, link }) => {
   const mongoRoom = await findMongoRoom(id);
 
   const word = 'playlist';
-  let isPlaylist = link.includes(word);
+  const isPlaylist = link.includes(word);
 
   if (isPlaylist) {
-    let playlistId = link.split('list=')[1];
-    let response = await axios.get(`${YOUTUBE_PLAYLIST_ITEMS_API}playlistId=${playlistId}&maxResults=500&key=${process.env.YOUTUBE_API_KEY}`);
+    const playlistId = link.split('list=')[1];
+    const response = await axios.get(`${YOUTUBE_PLAYLIST_ITEMS_API}playlistId=${playlistId}&maxResults=500&key=${process.env.YOUTUBE_API_KEY}`);
 
-    let playlist = response.data.items;
+    const playlist = response.data.items;
     mongoRoom.playlist = mongoRoom.playlist.concat(
-      playlist.map(video => {
-        return {
-          id: generateId(),
-          username,
-          link: `https://www.youtube.com/watch?v=${video.contentDetails.videoId}`,
-        }
-      })
+      playlist.map((video) => ({
+        id: generateId(),
+        username,
+        link: `https://www.youtube.com/watch?v=${video.contentDetails.videoId}`,
+      })),
     );
-  }
-  else {
+  } else {
     mongoRoom.playlist.push({
       id: generateId(),
       username,
@@ -174,7 +171,7 @@ const addVideoToPLaylist = async ({ id, username, link }) => {
 const moveDownVideo = async (roomId, videoId) => {
   const mongoRoom = await findMongoRoom(roomId);
 
-  const index = mongoRoom.playlist.findIndex(video => video.id === videoId);
+  const index = mongoRoom.playlist.findIndex((video) => video.id === videoId);
 
   if (mongoRoom.playlist.length === index) {
     return;
@@ -191,7 +188,7 @@ const moveDownVideo = async (roomId, videoId) => {
 const moveUpVideo = async (roomId, videoId) => {
   const mongoRoom = await findMongoRoom(roomId);
 
-  const index = mongoRoom.playlist.findIndex(video => video.id === videoId);
+  const index = mongoRoom.playlist.findIndex((video) => video.id === videoId);
 
   if (index === 0) {
     return;
@@ -208,20 +205,18 @@ const moveUpVideo = async (roomId, videoId) => {
 const removeVideoFromPlaylist = async (roomId, videoId) => {
   const mongoRoom = await findMongoRoom(roomId);
 
-  const index = mongoRoom.playlist.findIndex(video => video.id === videoId);
+  const index = mongoRoom.playlist.findIndex((video) => video.id === videoId);
 
   mongoRoom.playlist.splice(index, 1);
   await mongoRoom.save();
 
   return mongoRoom.playlist;
-}
+};
 
 const kickUserFromRoom = async (roomId, userId) => {
-  let mongoRoom = await MongoRoomModel.findOne({ roomId });
+  const mongoRoom = await MongoRoomModel.findOne({ roomId });
 
-  const index = mongoRoom.users.findIndex(id => {
-    return id === userId;
-  });
+  const index = mongoRoom.users.findIndex((id) => id === userId);
 
   mongoRoom.users.splice(index, 1);
 
@@ -230,7 +225,7 @@ const kickUserFromRoom = async (roomId, userId) => {
 };
 
 const playVideo = async (roomId) => {
-  let redisRoom = await findRedisRoom(roomId);
+  const redisRoom = await findRedisRoom(roomId);
 
   redisRoom.video.status = VIDEO_STATUS.PLAYED;
   await redisRoom.save();
@@ -238,7 +233,7 @@ const playVideo = async (roomId) => {
 };
 
 const stopVideo = async (roomId) => {
-  let redisRoom = await findRedisRoom(roomId);
+  const redisRoom = await findRedisRoom(roomId);
 
   redisRoom.video.status = VIDEO_STATUS.STOPPED;
   await redisRoom.save();
@@ -246,7 +241,7 @@ const stopVideo = async (roomId) => {
 };
 
 const jumpInVideo = async (roomId, duration) => {
-  let redisRoom = await findRedisRoom(roomId);
+  const redisRoom = await findRedisRoom(roomId);
 
   redisRoom.video.duration = duration;
   await redisRoom.save();
@@ -257,7 +252,7 @@ const skipVideo = async (roomId) => {
   const redisRoom = await findRedisRoom(roomId);
   const mongoRoom = await findMongoRoom(roomId);
 
-  if (mongoRoom.playlist.length == 0) {
+  if (mongoRoom.playlist.length === 0) {
     return;
   }
 
@@ -271,7 +266,7 @@ const skipVideo = async (roomId) => {
   const room = {
     ...redisRoom,
     ...mongoRoom._doc,
-  }
+  };
 
   return room;
 };
@@ -280,7 +275,7 @@ const getVideoDuration = async (roomId) => {
   const redisRoom = await findRedisRoom(roomId);
 
   return redisRoom.video.duration;
-}
+};
 
 const findUserWithId = async (id) => {
   const user = await UserModel.findOne({ id });
@@ -290,7 +285,7 @@ const findUserWithId = async (id) => {
   }
 
   return user;
-}
+};
 
 const findUserWithSocketId = async (socketId) => {
   const user = await UserModel.findOne({ socketId });
@@ -300,7 +295,7 @@ const findUserWithSocketId = async (socketId) => {
   }
 
   return user;
-}
+};
 
 const addSocketId = async (id, socketId) => {
   const user = await findUserWithId(id);
@@ -308,7 +303,7 @@ const addSocketId = async (id, socketId) => {
 
   user.save();
   return user;
-}
+};
 
 const RoomService = {
   createRoom,

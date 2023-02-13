@@ -18,9 +18,9 @@ const createSystemMessage = (text) => {
 };
 
 const saveMessage = async (id, text, user) => {
-  let room = await RoomService.findRedisRoom(id);
+  const room = await RoomService.findRedisRoom(id);
 
-  if(room.messages.length > 100 ){
+  if (room.messages.length > 100) {
     room.messages.shift();
   }
 
@@ -45,18 +45,18 @@ const createLeaveMessage = (username) => {
   return message;
 };
 
-const saveSystemMessage = async ({id, status, username}) => {
-  let room = await RoomService.findRedisRoom(id);
+const saveSystemMessage = async ({ id, status, username }) => {
+  const room = await RoomService.findRedisRoom(id);
   let message;
-  switch(status) {
-    case SOCKET_EVENTS.JOIN_ROOM:
-      message = createJoinMessage(username);
-      break;
-    case SOCKET_EVENTS.DISCONNECT: 
-      message = createLeaveMessage(username);
-      break;
-    default:
-      return;
+  switch (status) {
+  case SOCKET_EVENTS.JOIN_ROOM:
+    message = createJoinMessage(username);
+    break;
+  case SOCKET_EVENTS.DISCONNECT:
+    message = createLeaveMessage(username);
+    break;
+  default:
+    return;
   }
 
   room.messages.push(message);

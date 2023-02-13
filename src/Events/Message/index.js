@@ -1,14 +1,14 @@
 import { SOCKET_EVENTS } from '../../Constants';
-import MessageService from '../../Services/Message'
+import MessageService from '../../Services/Message';
 
-export const message = async ({id, text, user }, { socket, io }) => {
-  let message = await MessageService.saveMessage(id, text, user);
-  
+export const message = async ({ id, text, user }, { socket, io }) => {
+  const message = await MessageService.saveMessage(id, text, user);
+
   io.to(id).emit(SOCKET_EVENTS.RECEIVE_MESSAGE, { message });
 };
 
 export const typing = async ({ id, username }, { socket, io }) => {
-  socket.broadcast.to(id).emit(SOCKET_EVENTS.DISPLAY, { username })
+  socket.broadcast.to(id).emit(SOCKET_EVENTS.DISPLAY, { username });
 };
 
 export default [

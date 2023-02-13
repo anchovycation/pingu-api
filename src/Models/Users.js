@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
-import generateId from "../Utilities/GenerateId";
+import mongoose from 'mongoose';
+import generateId from '../Utilities/GenerateId';
 
 const User = new mongoose.Schema({
-  id: { 
+  id: {
     type: String,
     default: generateId(),
   },
@@ -11,6 +11,6 @@ const User = new mongoose.Schema({
   role: String,
 });
 
-const UserModel = mongoose.model("User", User);
+const UserModel = mongoose.model('User', User);
 
 export default UserModel;

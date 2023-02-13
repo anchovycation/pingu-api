@@ -1,37 +1,33 @@
-import { SOCKET_EVENTS, VIDEO_STATUS, ACTIONS} from '../../Constants';
+import { SOCKET_EVENTS, VIDEO_STATUS, ACTIONS } from '../../Constants';
 import RoomService from '../../Services/Room';
 import Timer from '../../Utilities/Timer';
 
-export const updateVideoStatus = async (
-  { id, userId, video, videoStatus }, { socket, io }
-) => {
+export const updateVideoStatus = async ({
+  id, userId, video, videoStatus,
+}, { socket, io }) => {
   switch (videoStatus) {
-    case VIDEO_STATUS.PLAYED:
-      video = await RoomService.playVideo(id);
-      Timer.startTimer(id);
-      break;
-    case VIDEO_STATUS.STOPPED:
-      video = await RoomService.stopVideo(id);
-      Timer.stopTimer(id);
-      break;
-    default:
-      return;
+  case VIDEO_STATUS.PLAYED:
+    video = await RoomService.playVideo(id);
+    Timer.startTimer(id);
+    break;
+  case VIDEO_STATUS.STOPPED:
+    video = await RoomService.stopVideo(id);
+    Timer.stopTimer(id);
+    break;
+  default:
+    return;
   }
-  
+
   io.to(id).emit(SOCKET_EVENTS.VIDEO_STATUS_UPDATED, { video });
 };
 
-export const jumpInVideo = async (
-  { id, userId, duration }, { socket, io }
-) => {
-  let video = await RoomService.jumpInVideo(id, duration);
+export const jumpInVideo = async ({ id, userId, duration }, { socket, io }) => {
+  const video = await RoomService.jumpInVideo(id, duration);
   io.to(id).emit(SOCKET_EVENTS.VIDEO_DURATION_CHANGED, { video });
 };
 
-export const skipVideo = async (
-  { id, userId }, { socket, io }
-) => {
-  let room = await RoomService.skipVideo(id);
+export const skipVideo = async ({ id, userId }, { socket, io }) => {
+  const room = await RoomService.skipVideo(id);
   io.to(id).emit(SOCKET_EVENTS.VIDEO_SKIPPED, { video: room.video, playlist: room.playlist });
 };
 

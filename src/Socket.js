@@ -7,7 +7,8 @@ import { Server } from 'socket.io';
 import { SOCKET_EVENTS } from './Constants';
 import eventsHandlers from './Events';
 import { connectionEventHandler } from './Events/System';
-import Authorization from './Middlewares/Authorization'
+import Authorization from './Middlewares/Authorization';
+
 let io = null;
 
 const bindSocket = (expressServer) => {
@@ -20,7 +21,7 @@ const listenServer = () => {
     // Binds all events and handlers in eventHandlers
     eventsHandlers.forEach((element) => {
       socket.on(element.event, (arg) => {
-        Authorization({ socketId: socket.id, event: element.event })
+        Authorization({ socketId: socket.id, event: element.event });
         element.handler(arg, { socket, io });
       });
     });

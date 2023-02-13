@@ -10,8 +10,8 @@ const createRoom = async (req, res) => {
     });
   }
   if (
-    !videoUrl.startsWith('https://www.youtube.com/watch?v=') &&
-    !videoUrl.startsWith('https://youtu.be/')
+    !videoUrl.startsWith('https://www.youtube.com/watch?v=')
+    && !videoUrl.startsWith('https://youtu.be/')
   ) {
     return res.status(400).send({
       message:
@@ -21,7 +21,7 @@ const createRoom = async (req, res) => {
   const room = await RoomService.createRoom({ username, roomName, videoUrl });
   return res
     .status(201)
-    .send({ room: room, user: room.users[0] });
+    .send({ room, user: room.users[0] });
 };
 
 const joinRoom = async (req, res, next) => {

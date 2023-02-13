@@ -3,7 +3,7 @@ import RoomService from '../../Services/Room';
 import MessageService from '../../Services/Message';
 
 export const joinRoom = async ({ id, userId, username }, { socket, io }) => {
-  let room = await RoomService.findRooms(id);
+  const room = await RoomService.findRooms(id);
   await RoomService.addSocketId(userId, socket.id);
   socket.join(room.id);
 

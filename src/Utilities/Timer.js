@@ -2,7 +2,7 @@ import RoomService from "../Services/Room";
 
  class Timer {
 
-  static timers = {};
+  static timers = {}
 
   static startTimer = async (id) =>  {
     let room = await RoomService.findRedisRoom(id);
