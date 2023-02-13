@@ -16,14 +16,37 @@ const bindSocket = (expressServer) => {
   listenServer();
 };
 
+const errorHandler = (socket, handler) => {
+  const handleError = (err) => {
+    console.error({ socketError: err, socketId: socket.id });
+    socket.emit('socket-error', { error: err.message });
+  };
+
+  return (...args) => {
+    try {
+      const ret = handler.apply(this, args);
+      if (ret && typeof ret.catch === "function") {
+        // async handler
+        ret.catch(handleError);
+      }
+    } catch (e) {
+      // sync handler
+      handleError(e);
+    }
+  };
+};
+
 const listenServer = () => {
   io.on(SOCKET_EVENTS.CONNECTION, (socket) => {
     // Binds all events and handlers in eventHandlers
     eventsHandlers.forEach((element) => {
-      socket.on(element.event, (arg) => {
-        Authorization({ socketId: socket.id, event: element.event });
+      socket.on(element.event, errorHandler(socket, async (arg) => {
+        // Add middlewares here
+        await Authorization({ socketId: socket.id, event: element.event });
+
+        // Event handler
         element.handler(arg, { socket, io });
-      });
+      }));
     });
 
     /* add here same codes to do when user connects */
