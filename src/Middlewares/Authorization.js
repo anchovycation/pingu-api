@@ -1,17 +1,23 @@
 import { ACTIONS } from '../Constants';
-import CustomError from '../Exceptions/CustomError';
 import RoomService from '../Services/Room';
 
 const authorization = async ({ socketId, event }) => {
-  if (!(event in ACTIONS)) {
-    return;
-  }
-  const user = await RoomService.findUserWithSocketId(socketId);
+  try {
+    if (!(event in ACTIONS)) {
+      return;
+    }
 
-  if (!ACTIONS[event].includes(user.role)) {
-    throw new CustomError(`You do not have permission to ${event}!`, 403);
+    // FIXME: This service throw CustomError if user doesnt exit
+    //        and this error have huge message body. It should return null
+    const user = await RoomService.findUserWithSocketId(socketId);
+
+    if (!ACTIONS[event].includes(user.role)) {
+      throw new Error();
+    }
+    return user;
+  } catch (error) {
+    throw new Error(`Socket not have permission to ${event}!`);
   }
-  return user;
 };
 
 export default authorization;
