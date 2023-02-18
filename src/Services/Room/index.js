@@ -1,8 +1,7 @@
-import Model from 'metronom';
 import axios from 'axios';
 import MessageService from '../Message';
 import generateId from '../../Utilities/GenerateId';
-import { USER_TYPES, VIDEO_STATUS } from '../../Constants';
+import { USER_TYPES, VIDEO_STATUS, RENAMES } from '../../Constants';
 import { MongoRoomModel, RedisRoomModel, UserModel } from '../../Models';
 import CustomError from '../../Exceptions/CustomError';
 
@@ -305,6 +304,26 @@ const addSocketId = async (id, socketId) => {
   return user;
 };
 
+const changeName = async ({id, socketId,  type, name}) => {
+  let willBeRenamed;
+  switch (type) {
+    case RENAMES.USER:
+      willBeRenamed = await findUserWithSocketId(socketId);
+      willBeRenamed.username = name;
+      break;
+    case RENAMES.ROOM:
+      willBeRenamed = await findMongoRoom(id);
+      willBeRenamed.name = name;
+      break;
+    default:
+      break;
+  }
+
+  willBeRenamed.save();
+
+  return willBeRenamed;
+};
+
 const RoomService = {
   createRoom,
   joinRoom,
@@ -325,6 +344,7 @@ const RoomService = {
   findUserWithId,
   findUserWithSocketId,
   addSocketId,
+  changeName,
 };
 
 export default RoomService;
